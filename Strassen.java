@@ -133,121 +133,123 @@ public class Strassen{
         /*This section does some initialization work*/
         ///////////////////////////////////////////////////////////////////////////////////////////
         //This will be the input dimension, the dimension of the matrix in question
-        int dimension = 1024;
+        int dimension = 3;
 
         //This will determine the dimensions of our matrix with zeros added on to fit a power of 2
         int alt_dimension = (int) Math.pow(2.0, Math.ceil(Math.log(dimension) / Math.log(2)));
 
-        // //This is some file and scan instantiation
+        //This is some file and scan instantiation
         // BufferedWriter writer = new BufferedWriter(new FileWriter("test1.txt"));
 
-        int[][] triangMatr = new int[dimension][dimension];
+        // for (int i = 0; i < dimension; i++){
+        //     int randomNum = ThreadLocalRandom.current().nextInt(1, 100 + 1);
+        //     String connection;
 
-        for (int i = 0; i < dimension; i++){
-            for (int j = 0; j < dimension; j++){
-                if (j > i){
-                    int randomNum = ThreadLocalRandom.current().nextInt(1, 100 + 1);
-                    if (randomNum == 1){
-                        triangMatr[i][j] = 1;
-                    }
-                    else{
-                        triangMatr[i][j] = 0;
-                    }
-                }
-                else{
-                    triangMatr[i][j] = triangMatr[j][i];
-                }
-            }
-        }
+        //     if (randomNum == 1){
+        //         connection = Integer.toString(1);
+        //     }
+        //     else{
+        //         connection = Integer.toString(0);
+        //     }
 
-        int[][] matr = strassenMult(triangMatr, triangMatr);
-        int[][] finalMatr = strassenMult(matr, triangMatr);
-        int sumTriang = 0;
+        //     writer.write(connection);
+        // }
+        // writer.close();
 
-        for (int i = 0; i < dimension; i++){
-            for (int j = 0; j < dimension; j++){
-                if (i == j){
-                    sumTriang += finalMatr[i][j];
-                }
-            }
-        }
+        File file = new File("test1.txt");
+        Scanner scan = new Scanner(file);
+        ///////////////////////////////////////////////////////////////////////////////////////////
 
-        System.out.println(sumTriang / 6.0);
+        /*Triangle Task*/
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        // int[][] triangMatr = new int[dimension][dimension];
 
-        // // for (int i = 0; i < dimension; i++){
-        // //     int randomNum = ThreadLocalRandom.current().nextInt(1, 100 + 1);
-        // //     String connection;
-
-        // //     if (randomNum == 1){
-        // //         connection = Integer.toString(1);
-        // //     }
-        // //     else{
-        // //         connection = Integer.toString(0);
-        // //     }
-
-        // //     writer.write(connection);
-        // // }
-        // // writer.close();
-
-        // File file = new File("test.txt");
-        // Scanner scan = new Scanner(file);
-        // ///////////////////////////////////////////////////////////////////////////////////////////
-
-
-        // /*This section creates our two matrices to multiply*/
-        // ///////////////////////////////////////////////////////////////////////////////////////////
-        // //Instantiation of the matrix of a power of 2
-        // int[][] matr1 = new int[alt_dimension][alt_dimension];
-        // int[][] matr2 = new int[alt_dimension][alt_dimension];
-
-        // //These for loops iterate through both matrices
-        // for (int i = 0; i < alt_dimension; i++){
-        //     for (int j = 0; j < alt_dimension; j++){
-        //         //This is the padding of extra zeroes
-        //         if (i >= dimension || j >= dimension){
-        //             matr1[i][j] = 0;
+        // for (int i = 0; i < dimension; i++){
+        //     for (int j = 0; j < dimension; j++){
+        //         if (j > i){
+        //             int randomNum = ThreadLocalRandom.current().nextInt(1, 100 + 1);
+        //             if (randomNum == 1 || randomNum == 2 || randomNum == 3 || randomNum == 4 || randomNum == 5 || randomNum == 6){
+        //                 triangMatr[i][j] = 1;
+        //             }
+        //             else{
+        //                 triangMatr[i][j] = 0;
+        //             }
         //         }
         //         else{
-        //             matr1[i][j] = Integer.parseInt(scan.nextLine());
+        //             triangMatr[i][j] = triangMatr[j][i];
         //         }
         //     }
         // }
 
-        // //Same thing
-        // for (int i = 0; i < alt_dimension; i++){
-        //     for (int j = 0; j < alt_dimension; j++){
-        //         if (i >= dimension || j >= dimension){
-        //             matr2[i][j] = 0;
-        //         }
-        //         else{
-        //             matr2[i][j] = Integer.parseInt(scan.nextLine());
-        //         }
-        //     }
-        // }
+        // int[][] matr = strassenMult(triangMatr, triangMatr);
+        // int[][] finalMatr = strassenMult(matr, triangMatr);
+        // int sumTriang = 0;
 
-        // //Just closes the scanner (not really important but makes an error message shut up)
-        // scan.close();
-        // ///////////////////////////////////////////////////////////////////////////////////////////
-
-
-        // /*This section calls the recursive strassenMult method and prints the resulting diagonal*/
-        // ///////////////////////////////////////////////////////////////////////////////////////////
-        // //Call strassenMult and instantiate start/finish times
-        // long start = System.currentTimeMillis();
-        // int[][] matr3 = strassenMult(matr1, matr2);
-        // long finish = System.currentTimeMillis();
-
-        // //Print the diagonal entries of the resulting matrix
         // for (int i = 0; i < dimension; i++){
         //     for (int j = 0; j < dimension; j++){
         //         if (i == j){
-        //             System.out.println(matr3[i][j]);
+        //             sumTriang += finalMatr[i][j];
         //         }
         //     }
         // }
 
-        // //Print the time elapsed
-        // System.out.println((finish - start) / 1000.0);
-        // ///////////////////////////////////////////////////////////////////////////////////////////
+        // System.out.println(sumTriang / 6.0);
+        ///////////////////////////////////////////////////////////////////////////////////////////
+
+        /*This section creates our two matrices to multiply*/
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        //Instantiation of the matrix of a power of 2
+        int[][] matr1 = new int[alt_dimension][alt_dimension];
+        int[][] matr2 = new int[alt_dimension][alt_dimension];
+
+        //These for loops iterate through both matrices
+        for (int i = 0; i < alt_dimension; i++){
+            for (int j = 0; j < alt_dimension; j++){
+                //This is the padding of extra zeroes
+                if (i >= dimension || j >= dimension){
+                    matr1[i][j] = 0;
+                }
+                else{
+                    matr1[i][j] = Integer.parseInt(scan.nextLine());
+                }
+            }
+        }
+
+        //Same thing
+        for (int i = 0; i < alt_dimension; i++){
+            for (int j = 0; j < alt_dimension; j++){
+                if (i >= dimension || j >= dimension){
+                    matr2[i][j] = 0;
+                }
+                else{
+                    matr2[i][j] = Integer.parseInt(scan.nextLine());
+                }
+            }
+        }
+
+        //Just closes the scanner (not really important but makes an error message shut up)
+        scan.close();
+        ///////////////////////////////////////////////////////////////////////////////////////////
+
+
+        /*This section calls the recursive strassenMult method and prints the resulting diagonal*/
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        //Call strassenMult and instantiate start/finish times
+        long start = System.currentTimeMillis();
+        int[][] matr3 = strassenMult(matr1, matr2);
+        long finish = System.currentTimeMillis();
+
+        //Print the diagonal entries of the resulting matrix
+        for (int i = 0; i < dimension; i++){
+            for (int j = 0; j < dimension; j++){
+                if (i == j){
+                    System.out.println(matr3[i][j]);
+                }
+            }
+        }
+
+        //Print the time elapsed
+        System.out.println((finish - start) / 1000.0);
+        ///////////////////////////////////////////////////////////////////////////////////////////
     }
 }
