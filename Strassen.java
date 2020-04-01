@@ -1,5 +1,7 @@
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -7,15 +9,32 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 public class Strassen{
+    public static int[][] normalMult(int[][] matr1, int[][] matr2) {
+        int dimension = matr1.length;
 
-    public static int[][] strassenMult(int[][] matr1, int[][] matr2){
+        int[][] matr3 = new int[dimension][dimension];
+            
+            //Multiply the two matrices conventionally
+            for (int i = 0; i < dimension; i++) {
+                for (int k = 0; k < dimension; k++) {
+                    for (int j = 0; j < dimension; j++) {
+                        matr3[i][j] += matr1[i][k] * matr2[k][j];
+                    }
+                }
+            }
+            
+            //Return the resulting matrix
+            return matr3;
+    }
+
+    public static int[][] strassenMult(int[][] matr1, int[][] matr2, int dim){
 
         //Finds the dimension of the two matrices we will apply Strassen's on to
         int dimension = matr1.length;
 
         //This if-else statement determines where the cross-over point will be used
         //If we are under the cross-over point:
-        if (dimension <= 256){
+        if (dimension <= dim){
             //Instantiate resulting matrix
             int[][] matr3 = new int[dimension][dimension];
             
@@ -81,13 +100,13 @@ public class Strassen{
             /*This section is the recursive part of Strassen's*/
             ///////////////////////////////////////////////////////////////////////////////////////////
             //Instantiate the P's of Strassen and do the recursion
-            int[][] matrP1 = strassenMult(matrP11, matrP12);
-            int[][] matrP2 = strassenMult(matrP21, matrP22);
-            int[][] matrP3 = strassenMult(matrP31, matrP32);
-            int[][] matrP4 = strassenMult(matrP41, matrP42);
-            int[][] matrP5 = strassenMult(matrP51, matrP52);
-            int[][] matrP6 = strassenMult(matrP61, matrP62);
-            int[][] matrP7 = strassenMult(matrP71, matrP72);
+            int[][] matrP1 = strassenMult(matrP11, matrP12, dim);
+            int[][] matrP2 = strassenMult(matrP21, matrP22, dim);
+            int[][] matrP3 = strassenMult(matrP31, matrP32, dim);
+            int[][] matrP4 = strassenMult(matrP41, matrP42, dim);
+            int[][] matrP5 = strassenMult(matrP51, matrP52, dim);
+            int[][] matrP6 = strassenMult(matrP61, matrP62, dim);
+            int[][] matrP7 = strassenMult(matrP71, matrP72, dim);
             ///////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -130,49 +149,51 @@ public class Strassen{
 
     public static void main(String[] args) throws FileNotFoundException, IOException{
 
-        /*This section does some initialization work*/
-        ///////////////////////////////////////////////////////////////////////////////////////////
+
+
+        // /*This section does some initialization work*/
+        // ///////////////////////////////////////////////////////////////////////////////////////////
         //This will be the input dimension, the dimension of the matrix in question
         int dimension = 1024;
 
         //This will determine the dimensions of our matrix with zeros added on to fit a power of 2
         int alt_dimension = (int) Math.pow(2.0, Math.ceil(Math.log(dimension) / Math.log(2)));
 
-        // //This is some file and scan instantiation
-        // BufferedWriter writer = new BufferedWriter(new FileWriter("test1.txt"));
+        // // //This is some file and scan instantiation
+        // // BufferedWriter writer = new BufferedWriter(new FileWriter("test1.txt"));
 
-        int[][] triangMatr = new int[dimension][dimension];
+        // int[][] triangMatr = new int[dimension][dimension];
 
-        for (int i = 0; i < dimension; i++){
-            for (int j = 0; j < dimension; j++){
-                if (j > i){
-                    int randomNum = ThreadLocalRandom.current().nextInt(1, 100 + 1);
-                    if (randomNum == 1){
-                        triangMatr[i][j] = 1;
-                    }
-                    else{
-                        triangMatr[i][j] = 0;
-                    }
-                }
-                else{
-                    triangMatr[i][j] = triangMatr[j][i];
-                }
-            }
-        }
+        // for (int i = 0; i < dimension; i++){
+        //     for (int j = 0; j < dimension; j++){
+        //         if (j > i){
+        //             int randomNum = ThreadLocalRandom.current().nextInt(1, 100 + 1);
+        //             if (randomNum == 1){
+        //                 triangMatr[i][j] = 1;
+        //             }
+        //             else{
+        //                 triangMatr[i][j] = 0;
+        //             }
+        //         }
+        //         else{
+        //             triangMatr[i][j] = triangMatr[j][i];
+        //         }
+        //     }
+        // }
 
-        int[][] matr = strassenMult(triangMatr, triangMatr);
-        int[][] finalMatr = strassenMult(matr, triangMatr);
-        int sumTriang = 0;
+        // int[][] matr = strassenMult(triangMatr, triangMatr);
+        // int[][] finalMatr = strassenMult(matr, triangMatr);
+        // int sumTriang = 0;
 
-        for (int i = 0; i < dimension; i++){
-            for (int j = 0; j < dimension; j++){
-                if (i == j){
-                    sumTriang += finalMatr[i][j];
-                }
-            }
-        }
+        // for (int i = 0; i < dimension; i++){
+        //     for (int j = 0; j < dimension; j++){
+        //         if (i == j){
+        //             sumTriang += finalMatr[i][j];
+        //         }
+        //     }
+        // }
 
-        System.out.println(sumTriang / 6.0);
+        // System.out.println(sumTriang / 6.0);
 
         // // for (int i = 0; i < dimension; i++){
         // //     int randomNum = ThreadLocalRandom.current().nextInt(1, 100 + 1);
@@ -189,54 +210,84 @@ public class Strassen{
         // // }
         // // writer.close();
 
-        // File file = new File("test.txt");
-        // Scanner scan = new Scanner(file);
-        // ///////////////////////////////////////////////////////////////////////////////////////////
+        File file = new File("test.txt");
+        Scanner scan = new Scanner(file);
+        ///////////////////////////////////////////////////////////////////////////////////////////
 
 
-        // /*This section creates our two matrices to multiply*/
-        // ///////////////////////////////////////////////////////////////////////////////////////////
-        // //Instantiation of the matrix of a power of 2
-        // int[][] matr1 = new int[alt_dimension][alt_dimension];
-        // int[][] matr2 = new int[alt_dimension][alt_dimension];
+        /*This section creates our two matrices to multiply*/
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        //Instantiation of the matrix of a power of 2
+        int[][] matr1 = new int[alt_dimension][alt_dimension];
+        int[][] matr2 = new int[alt_dimension][alt_dimension];
 
-        // //These for loops iterate through both matrices
-        // for (int i = 0; i < alt_dimension; i++){
-        //     for (int j = 0; j < alt_dimension; j++){
-        //         //This is the padding of extra zeroes
-        //         if (i >= dimension || j >= dimension){
-        //             matr1[i][j] = 0;
-        //         }
-        //         else{
-        //             matr1[i][j] = Integer.parseInt(scan.nextLine());
-        //         }
-        //     }
-        // }
+        //These for loops iterate through both matrices
+        for (int i = 0; i < alt_dimension; i++){
+            for (int j = 0; j < alt_dimension; j++){
+                //This is the padding of extra zeroes
+                if (i >= dimension || j >= dimension){
+                    matr1[i][j] = 0;
+                }
+                else{
+                    matr1[i][j] = Integer.parseInt(scan.nextLine());
+                }
+            }
+        }
 
-        // //Same thing
-        // for (int i = 0; i < alt_dimension; i++){
-        //     for (int j = 0; j < alt_dimension; j++){
-        //         if (i >= dimension || j >= dimension){
-        //             matr2[i][j] = 0;
-        //         }
-        //         else{
-        //             matr2[i][j] = Integer.parseInt(scan.nextLine());
-        //         }
-        //     }
-        // }
+        //Same thing
+        for (int i = 0; i < alt_dimension; i++){
+            for (int j = 0; j < alt_dimension; j++){
+                if (i >= dimension || j >= dimension){
+                    matr2[i][j] = 0;
+                }
+                else{
+                    matr2[i][j] = Integer.parseInt(scan.nextLine());
+                }
+            }
+        }
 
-        // //Just closes the scanner (not really important but makes an error message shut up)
-        // scan.close();
-        // ///////////////////////////////////////////////////////////////////////////////////////////
+        //Just closes the scanner (not really important but makes an error message shut up)
+        scan.close();
+        ///////////////////////////////////////////////////////////////////////////////////////////
+
+
+        // HELEN'S TIMING //////////////////////////////////////////////////////////////////////////
+
+        int dimm = 2;
+        while(true) {
+            long start = System.currentTimeMillis();
+            int[][] matr3 = strassenMult(matr1, matr2, dimm);
+            long finish = System.currentTimeMillis();
+            long time = finish - start;
+            System.out.println(time + "diff");
+            System.out.println(dimm + "dim");
+            dimm*=2;
+        }
 
 
         // /*This section calls the recursive strassenMult method and prints the resulting diagonal*/
         // ///////////////////////////////////////////////////////////////////////////////////////////
         // //Call strassenMult and instantiate start/finish times
+    
         // long start = System.currentTimeMillis();
-        // int[][] matr3 = strassenMult(matr1, matr2);
+        // int[][] matr3 = strassenMult(matr1, matr2, dimmm);
         // long finish = System.currentTimeMillis();
+        //  time1 = finish - start;
 
+        // long start2 = System.currentTimeMillis();
+        // int[][] matr32 = normalMult(matr1, matr2);
+        // long finish2 = System.currentTimeMillis();
+        //  time2 = finish2 - start2;
+
+
+        // System.out.println(time1 + "strassen");
+        // System.out.println(time2 + "normal");
+        // System.out.println(time1 - time2 + "diff");
+
+        //     dimmm = dimmm + 1;
+        //     System.out.println("dim "+ dimmm);
+
+        
         // //Print the diagonal entries of the resulting matrix
         // for (int i = 0; i < dimension; i++){
         //     for (int j = 0; j < dimension; j++){
