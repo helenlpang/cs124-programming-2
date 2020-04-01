@@ -1,7 +1,5 @@
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -29,8 +27,12 @@ public class Strassen{
 
     public static int[][] strassenMult(int[][] matr1, int[][] matr2, int dim){
 
-        //Finds the dimension of the two matrices we will apply Strassen's on to
+        //Finds the dimension of the two matrices we will apply Strassen's on to (even-odd method)
         int dimension = matr1.length;
+        int alt_dimension = dimension;
+        if (dimension % 2 == 1){
+            alt_dimension = dimension + 1;
+        }
 
         //This if-else statement determines where the cross-over point will be used
         //If we are under the cross-over point:
@@ -58,6 +60,25 @@ public class Strassen{
             ///////////////////////////////////////////////////////////////////////////////////////////
             //Half of the dimension, used to split the matrices up into 4 parts
             int split = dimension / 2;
+            int[][] matr11 = new int[alt_dimension][alt_dimension];
+            int[][] matr22 = new int[alt_dimension][alt_dimension];
+
+            for (int i = 0; i < alt_dimension; i++){
+                for (int j = 0; j < alt_dimension; j++){
+                    if (i > dimension - 1 || j > dimension - 1){
+                        matr11[i][j] = 0;
+                        matr22[i][j] = 0;
+                    }
+                    else{
+                        matr11[i][j] = matr1[i][j];
+                        matr22[i][j] = matr2[i][j];
+                    }
+                }
+            }
+
+            if (dimension % 2 == 1){
+                split = alt_dimension / 2;
+            }
 
             //Instantiate matrices used in Strassen's
             int[][] matrP11 = new int[split][split];
@@ -78,20 +99,20 @@ public class Strassen{
             //Perform the necessary additions that create the matrices used in Strassen's
             for (int i = 0; i < split; i++){
                 for(int j = 0; j < split; j++){
-                    matrP11[i][j] = matr1[i][j];
-                    matrP12[i][j] = matr2[i][j + split] - matr2[i + split][j + split];
-                    matrP21[i][j] = matr1[i][j] + matr1[i][j + split];
-                    matrP22[i][j] = matr2[i + split][j + split];
-                    matrP31[i][j] = matr1[i + split][j] + matr1[i + split][j + split];
-                    matrP32[i][j] = matr2[i][j];
-                    matrP41[i][j] = matr1[i + split][j + split];
-                    matrP42[i][j] = matr2[i + split][j] - matr2[i][j];
-                    matrP51[i][j] = matr1[i][j] + matr1[i + split][j + split];
-                    matrP52[i][j] = matr2[i][j] + matr2[i + split][j + split];
-                    matrP61[i][j] = matr1[i][j + split] - matr1[i + split][j + split];
-                    matrP62[i][j] = matr2[i + split][j] + matr2[i + split][j + split];
-                    matrP71[i][j] = matr1[i][j] - matr1[i + split][j];
-                    matrP72[i][j] = matr2[i][j] + matr2[i][j + split];
+                    matrP11[i][j] = matr11[i][j];
+                    matrP12[i][j] = matr22[i][j + split] - matr22[i + split][j + split];
+                    matrP21[i][j] = matr11[i][j] + matr11[i][j + split];
+                    matrP22[i][j] = matr22[i + split][j + split];
+                    matrP31[i][j] = matr11[i + split][j] + matr11[i + split][j + split];
+                    matrP32[i][j] = matr22[i][j];
+                    matrP41[i][j] = matr11[i + split][j + split];
+                    matrP42[i][j] = matr22[i + split][j] - matr2[i][j];
+                    matrP51[i][j] = matr11[i][j] + matr11[i + split][j + split];
+                    matrP52[i][j] = matr22[i][j] + matr22[i + split][j + split];
+                    matrP61[i][j] = matr11[i][j + split] - matr11[i + split][j + split];
+                    matrP62[i][j] = matr22[i + split][j] + matr22[i + split][j + split];
+                    matrP71[i][j] = matr11[i][j] - matr11[i + split][j];
+                    matrP72[i][j] = matr22[i][j] + matr22[i][j + split];
                 }
             }
             ///////////////////////////////////////////////////////////////////////////////////////////
@@ -129,7 +150,7 @@ public class Strassen{
             }
 
             //Instantiate our resulting matrix
-            int[][] matr3 = new int[dimension][dimension];
+            int[][] matr3 = new int[alt_dimension][alt_dimension];
 
             //Construct it using the four parts
             for (int i = 0; i < split; i++){
@@ -143,106 +164,44 @@ public class Strassen{
             ///////////////////////////////////////////////////////////////////////////////////////////
 
             //Return the resulting matrix
-            return matr3;  
+            int[][] matrFinal = new int[dimension][dimension];
+            for (int i = 0; i < dimension; i++){
+                for (int j = 0; j < dimension; j++){
+                    matrFinal[i][j] = matr3[i][j];
+                }
+            }
+            return matrFinal;  
         }        
     }
 
     public static void main(String[] args) throws FileNotFoundException, IOException{
 
-
-
         // /*This section does some initialization work*/
         // ///////////////////////////////////////////////////////////////////////////////////////////
         //This will be the input dimension, the dimension of the matrix in question
-        int dimension = 1024;
-
-        //This will determine the dimensions of our matrix with zeros added on to fit a power of 2
-        int alt_dimension = (int) Math.pow(2.0, Math.ceil(Math.log(dimension) / Math.log(2)));
-
-        // // //This is some file and scan instantiation
-        // // BufferedWriter writer = new BufferedWriter(new FileWriter("test1.txt"));
-
-        // int[][] triangMatr = new int[dimension][dimension];
-
-        // for (int i = 0; i < dimension; i++){
-        //     for (int j = 0; j < dimension; j++){
-        //         if (j > i){
-        //             int randomNum = ThreadLocalRandom.current().nextInt(1, 100 + 1);
-        //             if (randomNum == 1){
-        //                 triangMatr[i][j] = 1;
-        //             }
-        //             else{
-        //                 triangMatr[i][j] = 0;
-        //             }
-        //         }
-        //         else{
-        //             triangMatr[i][j] = triangMatr[j][i];
-        //         }
-        //     }
-        // }
-
-        // int[][] matr = strassenMult(triangMatr, triangMatr);
-        // int[][] finalMatr = strassenMult(matr, triangMatr);
-        // int sumTriang = 0;
-
-        // for (int i = 0; i < dimension; i++){
-        //     for (int j = 0; j < dimension; j++){
-        //         if (i == j){
-        //             sumTriang += finalMatr[i][j];
-        //         }
-        //     }
-        // }
-
-        // System.out.println(sumTriang / 6.0);
-
-        // // for (int i = 0; i < dimension; i++){
-        // //     int randomNum = ThreadLocalRandom.current().nextInt(1, 100 + 1);
-        // //     String connection;
-
-        // //     if (randomNum == 1){
-        // //         connection = Integer.toString(1);
-        // //     }
-        // //     else{
-        // //         connection = Integer.toString(0);
-        // //     }
-
-        // //     writer.write(connection);
-        // // }
-        // // writer.close();
+        int dimension = 1024;        
 
         File file = new File("test.txt");
         Scanner scan = new Scanner(file);
         ///////////////////////////////////////////////////////////////////////////////////////////
 
-
         /*This section creates our two matrices to multiply*/
         ///////////////////////////////////////////////////////////////////////////////////////////
         //Instantiation of the matrix of a power of 2
-        int[][] matr1 = new int[alt_dimension][alt_dimension];
-        int[][] matr2 = new int[alt_dimension][alt_dimension];
+        int[][] matr1 = new int[dimension][dimension];
+        int[][] matr2 = new int[dimension][dimension];
 
         //These for loops iterate through both matrices
-        for (int i = 0; i < alt_dimension; i++){
-            for (int j = 0; j < alt_dimension; j++){
-                //This is the padding of extra zeroes
-                if (i >= dimension || j >= dimension){
-                    matr1[i][j] = 0;
-                }
-                else{
-                    matr1[i][j] = Integer.parseInt(scan.nextLine());
-                }
+        for (int i = 0; i < dimension; i++){
+            for (int j = 0; j < dimension; j++){
+                matr1[i][j] = Integer.parseInt(scan.nextLine());
             }
         }
 
         //Same thing
-        for (int i = 0; i < alt_dimension; i++){
-            for (int j = 0; j < alt_dimension; j++){
-                if (i >= dimension || j >= dimension){
-                    matr2[i][j] = 0;
-                }
-                else{
-                    matr2[i][j] = Integer.parseInt(scan.nextLine());
-                }
+        for (int i = 0; i < dimension; i++){
+            for (int j = 0; j < dimension; j++){
+                matr2[i][j] = Integer.parseInt(scan.nextLine());
             }
         }
 
@@ -250,11 +209,30 @@ public class Strassen{
         scan.close();
         ///////////////////////////////////////////////////////////////////////////////////////////
 
+        /*LEON'S TIMING*/
+        /*This section calls the recursive strassenMult method and prints the resulting diagonal*/
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        //Call strassenMult and instantiate start/finish times
+        long start = System.currentTimeMillis();
+        int[][] matr3 = strassenMult(matr1, matr2, 1024);
+        long finish = System.currentTimeMillis();
 
-        // HELEN'S TIMING //////////////////////////////////////////////////////////////////////////
+        //Print the diagonal entries of the resulting matrix
+        for (int i = 0; i < dimension; i++){
+            for (int j = 0; j < dimension; j++){
+                if (i == j){
+                    System.out.println(matr3[i][j]);
+                }
+            }
+        }
 
-        int dimm = 2;
-        while(true) {
+        //Print the time elapsed
+        System.out.println(finish - start);
+        ///////////////////////////////////////////////////////////////////////////////////////////
+
+        // HELEN'S TIMING /////////////////////////////////////////////////////////////////////////
+        int dimm = 4;
+        while(dimm <= 1024) {
             long start = System.currentTimeMillis();
             int[][] matr3 = strassenMult(matr1, matr2, dimm);
             long finish = System.currentTimeMillis();
@@ -263,42 +241,6 @@ public class Strassen{
             System.out.println(dimm + "dim");
             dimm*=2;
         }
-
-
-        // /*This section calls the recursive strassenMult method and prints the resulting diagonal*/
-        // ///////////////////////////////////////////////////////////////////////////////////////////
-        // //Call strassenMult and instantiate start/finish times
-    
-        // long start = System.currentTimeMillis();
-        // int[][] matr3 = strassenMult(matr1, matr2, dimmm);
-        // long finish = System.currentTimeMillis();
-        //  time1 = finish - start;
-
-        // long start2 = System.currentTimeMillis();
-        // int[][] matr32 = normalMult(matr1, matr2);
-        // long finish2 = System.currentTimeMillis();
-        //  time2 = finish2 - start2;
-
-
-        // System.out.println(time1 + "strassen");
-        // System.out.println(time2 + "normal");
-        // System.out.println(time1 - time2 + "diff");
-
-        //     dimmm = dimmm + 1;
-        //     System.out.println("dim "+ dimmm);
-
-        
-        // //Print the diagonal entries of the resulting matrix
-        // for (int i = 0; i < dimension; i++){
-        //     for (int j = 0; j < dimension; j++){
-        //         if (i == j){
-        //             System.out.println(matr3[i][j]);
-        //         }
-        //     }
-        // }
-
-        // //Print the time elapsed
-        // System.out.println((finish - start) / 1000.0);
-        // ///////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////
     }
 }
