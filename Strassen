@@ -1,2 +1,2 @@
 #!/bin/bash
-java -jar myjar2.jar $1 $2 $3
+java -jar myjar.jar $1 $2 $3

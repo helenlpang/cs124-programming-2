@@ -2,19 +2,19 @@ JAVAC=javac
 sources = $(wildcard *.java)
 classes = $(sources:.java=.class)
 
-all: Strassen
+all: strassen
 
-Strassen: $(classes)
+strassen: $(classes)
 
-Strassen.class: Strassen.java
+strassen.class: strassen.java
 	$(JAVAC) $<
   
 	@echo "Manifest-Version: 1.0" > manifest.txt
 	@echo "Class-Path: ." >> manifest.txt
-	@echo "Main-Class: Strassen" >> manifest.txt
+	@echo "Main-Class: strassen" >> manifest.txt
 	@echo "" >> manifest.txt
 
-	jar cfm myjar2.jar manifest.txt $(classes)
+	jar cfm myjar.jar manifest.txt $(classes)
 
 clean:
 	rm -f *.class

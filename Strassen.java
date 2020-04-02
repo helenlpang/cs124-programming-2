@@ -6,7 +6,7 @@ import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
-public class Strassen{
+public class strassen{
     public static int[][] normalMult(int[][] matr1, int[][] matr2) {
         int dimension = matr1.length;
 
@@ -179,9 +179,9 @@ public class Strassen{
         // /*This section does some initialization work*/
         // ///////////////////////////////////////////////////////////////////////////////////////////
         //This will be the input dimension, the dimension of the matrix in question
-        int dimension = 1024;        
+        int dimension = Integer.parseInt(args[1]);        
 
-        File file = new File("test.txt");
+        File file = new File(args[2]);
         Scanner scan = new Scanner(file);
         ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -230,17 +230,5 @@ public class Strassen{
         System.out.println(finish - start);
         ///////////////////////////////////////////////////////////////////////////////////////////
 
-        // HELEN'S TIMING /////////////////////////////////////////////////////////////////////////
-        int dimm = 4;
-        while(dimm <= 1024) {
-            long start = System.currentTimeMillis();
-            int[][] matr3 = strassenMult(matr1, matr2, dimm);
-            long finish = System.currentTimeMillis();
-            long time = finish - start;
-            System.out.println(time + "diff");
-            System.out.println(dimm + "dim");
-            dimm*=2;
-        }
-        ///////////////////////////////////////////////////////////////////////////////////////////
     }
 }
